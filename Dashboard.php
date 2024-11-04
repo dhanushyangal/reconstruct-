@@ -473,41 +473,41 @@ if (!$user) {
                     <div class="calendar-grid">
                         <?php
                         $year = date('Y');
-                        $currentMonth = date('m');
-
-                        // Initialize the first day of the current month
-                        $currentDate = new DateTime("$year-$currentMonth-01");
-
-                        // Create vertical columns for each week starting from the current month
+                        
+                        // Initialize the first week
+                        $currentDate = new DateTime("$year-01-01");
+                        $weekOffset = $currentDate->format('w'); // Get the day of week (0-6)
+                        
+                        // Create vertical columns for each week
                         for ($week = 0; $week < 53; $week++) {
                             echo "<div class='week-column'>";
                             
                             for ($dayOfWeek = 0; $dayOfWeek < 7; $dayOfWeek++) {
-                                $dateKey = $currentDate->format('Y-m-d');
-                                $spinCount = $spinsByDate[$dateKey] ?? 0;
+                                $currentDate = new DateTime("$year-01-01 +$week weeks +$dayOfWeek days -$weekOffset days");
                                 
-                                $level = 0;
-                                if ($spinCount > 0) {
-                                    if ($spinCount <= 3) $level = 1;
-                                    else if ($spinCount <= 5) $level = 2;
-                                    else if ($spinCount <= 8) $level = 3;
-                                    else $level = 4;
+                                if ($currentDate->format('Y') == $year) {
+                                    $dateKey = $currentDate->format('Y-m-d');
+                                    $spinCount = $spinsByDate[$dateKey] ?? 0;
+                                    
+                                    $level = 0;
+                                    if ($spinCount > 0) {
+                                        if ($spinCount <= 3) $level = 1;
+                                        else if ($spinCount <= 5) $level = 2;
+                                        else if ($spinCount <= 8) $level = 3;
+                                        else $level = 4;
+                                    }
+
+                                    echo "<div class='day level-$level' 
+                                              data-date='$dateKey' 
+                                              data-count='$spinCount' 
+                                              title='{$currentDate->format('F j, Y')}: $spinCount contributions'></div>";
+                                } else {
+                                    echo "<div class='day empty'></div>";
                                 }
-
-                                echo "<div class='day level-$level' 
-                                          data-date='$dateKey' 
-                                          data-count='$spinCount' 
-                                          title='{$currentDate->format('F j, Y')}: $spinCount contributions'></div>";
-
-                                // Move to the next day
-                                $currentDate->modify('+1 day');
                             }
                             
                             echo "</div>";
                         }
-
-                        // The month labels section has been removed, as per your request
-                        // The calendar will now start from the current month and display days accordingly
                         ?>
                     </div>
                 </div>
@@ -557,5 +557,4 @@ if (!$user) {
     </footer>
 </body>
 </html>
-
 
